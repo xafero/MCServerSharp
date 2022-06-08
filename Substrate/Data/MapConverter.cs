@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Drawing;
-using System.Drawing.Imaging;
 
 namespace Substrate.Data
 {
@@ -300,7 +297,7 @@ namespace Substrate.Data
         {
             return _colorIndex[NearestColorIndex(color)];
         }
-
+        /*
         /// <summary>
         /// Fills a <see cref="Map"/>'s color data using nearest-matching colors from a source <see cref="Bitmap"/>.
         /// </summary>
@@ -339,7 +336,7 @@ namespace Substrate.Data
 
             return bmp;
         }
-
+        */
         private Vector3 RgbToXyz (Color color)
         {
             double r = color.R / 255.0;

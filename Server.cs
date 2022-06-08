@@ -6,27 +6,20 @@ using MCServerSharp.Network;
 using MCServerSharp.Worlds;
 using System;
 using System.Collections.Generic;
-using System.Drawing;
 using System.IO;
 using System.Net;
 using System.Net.Http;
-using System.Runtime.InteropServices;
 
 namespace MCServerSharp {
 	/// <summary>
 	/// A Minectaft Server implemented with C#
 	/// </summary>
 	public class Server : IDisposable {
-		[DllImport("User32", EntryPoint = "SendMessage", CallingConvention = CallingConvention.Winapi)]
-		protected static extern void SetIcon(IntPtr hWnd, uint Msg, int wParam, IntPtr lParam);
-		[DllImport("Kernel32", EntryPoint = "GetConsoleWindow", CallingConvention = CallingConvention.Winapi)]
-		protected static extern IntPtr GetConsoleWindowHWND();
-
 		/// <summary>
 		/// Instance of server
 		/// </summary>
 		public static Server Instance;
-		public static HttpClient Http = new();
+		public static readonly HttpClient Http = new();
 
 		/// <summary>
 		/// Game version of minecraft
@@ -104,8 +97,9 @@ namespace MCServerSharp {
 		/// <summary>
 		/// Start a new instance of server
 		/// </summary>
-		public Server(string[] configs) {
+		public Server(Options? configs) {
 			Instance = this;
+			ServerOptions = configs ?? new Options(25565);
 
 			if (File.Exists(@"Logs\Log.txt")) File.Move(@"Logs\Log.txt", File.GetCreationTime(@"Logs\Log.txt").ToString("s").Replace(':', '.') + "_Log.txt");
 			logger = new StreamWriter(File.Open(@"Logs\Log.txt", FileMode.Create, FileAccess.Write, FileShare.ReadWrite));
@@ -113,15 +107,8 @@ namespace MCServerSharp {
 			if (File.Exists("server-icon.png")) {
 				Log("Loading server-icon.png");
 				var b = File.ReadAllBytes("server-icon.png");
-				ServerIconBase64 = Convert.ToBase64String(b); //For Server List
-				var ms = new MemoryStream(b);
-				var icon = new Bitmap(ms).GetHicon();
-				SetIcon(GetConsoleWindowHWND(), 0x80, 0, icon); //Small Icon
-				SetIcon(GetConsoleWindowHWND(), 0x80, 1, icon); //Large Icon
-				ms.Close();
+				ServerIconBase64 = Convert.ToBase64String(b);
 			}
-
-			ServerOptions = new Options(25565);
 
 			PluginManager.ReloadPlugins("plugins");
 
@@ -137,7 +124,7 @@ namespace MCServerSharp {
 				CommandNode.RunCommand(ConsoleExcutor.Instance, Console.ReadLine());
 		}
 
-		public static Server Run(string[] configs) {
+		public static Server Run(Options? configs) {
 			return new Server(configs);
 		}
 
@@ -180,6 +167,7 @@ namespace MCServerSharp {
 		}
 
 		public virtual void Dispose() {
+			GC.SuppressFinalize(this);
 			Network.Dispose();
 			logger.Close();
 			Instance = null;

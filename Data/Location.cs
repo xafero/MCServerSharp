@@ -41,13 +41,5 @@ namespace MCServerSharp.Data {
 			info.AddValue("Yaw", Yaw);
 			info.AddValue("Pitch", Pitch);
 		}
-
-		public static bool operator ==(Location x, Location y) {
-			return x.Equals(y);
-		}
-
-		public static bool operator !=(Location x, Location y) {
-			return !x.Equals(y);
-		}
 	}
 }

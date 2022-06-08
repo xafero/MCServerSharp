@@ -3,9 +3,9 @@ using System.IO;
 using System.Text;
 
 namespace MCServerSharp.Data.Utils {
-	public static unsafe class Util {
-        public static string SectionSign = "§";
-        public static Encoding UTF8 = Encoding.UTF8;
+    public static unsafe class Util {
+        public static readonly string SectionSign = "§";
+        public static readonly Encoding UTF8 = Encoding.UTF8;
 
         #region Math
         /// <summary>
@@ -17,7 +17,7 @@ namespace MCServerSharp.Data.Utils {
                 x = y;
                 y = tmp;
             }
-		}
+        }
         #endregion Math
 
         #region BinaryConvert
@@ -45,15 +45,15 @@ namespace MCServerSharp.Data.Utils {
         /// Get a UTF-8 string prefixed with its size in bytes as a VarInt from a buffer
         /// </summary>
         /// <param name="buffer">Buffer to read</param>
-        public static string GetString(this Span<byte> buffer) {
-            return UTF8.GetString(buffer[buffer.ReadVarInt(out int i)..i]);
+        public static string GetString(this ReadOnlySpan<byte> buffer) {
+            return UTF8.GetString(buffer.Slice(buffer.ReadVarInt(out int i), i));
         }
         /// <summary>
         /// Get a UTF-8 string prefixed with its size in bytes as a VarInt from a buffer
         /// </summary>
         /// <param name="buffer">Buffer to read</param>
         /// <returns>Size of bytes read from <paramref name="buffer"/></returns>
-        public static int GetString(this Span<byte> buffer, out string output) {
+        public static int GetString(this ReadOnlySpan<byte> buffer, out string output) {
             var j = buffer.ReadVarInt(out int i);
             output = UTF8.GetString(buffer[j..i]);
             return j + i;
@@ -76,90 +76,91 @@ namespace MCServerSharp.Data.Utils {
         /// <summary>
         /// Get bytes of a <see cref="short"/>
         /// </summary>
-        public static Span<byte> GetBytes(this in short value) {
+        public static ReadOnlySpan<byte> GetBytes(this in short value) {
             fixed (short* ptr = &value)
-                return new Span<byte>((byte*)ptr, 2);
+                return new(ptr, 2);
         }
         /// <summary>
         /// Get bytes of a <see cref="ushort"/>
         /// </summary>
-        public static Span<byte> GetBytes(this in ushort value) {
+        public static ReadOnlySpan<byte> GetBytes(this in ushort value) {
             fixed (ushort* ptr = &value)
-                return new Span<byte>((byte*)ptr, 2);
+                return new(ptr, 2);
         }
         /// <summary>
         /// Get bytes of a <see cref="int"/>
         /// </summary>
-        public static Span<byte> GetBytes(this in int value) {
+        public static ReadOnlySpan<byte> GetBytes(this in int value) {
             fixed (int* ptr = &value)
-                return new Span<byte>((byte*)ptr, 4);
+                return new(ptr, 4);
         }
         /// <summary>
         /// Get bytes of a <see cref="uint"/>
         /// </summary>
-        public static Span<byte> GetBytes(this in uint value) {
+        public static ReadOnlySpan<byte> GetBytes(this in uint value) {
             fixed (uint* ptr = &value)
-                return new Span<byte>((byte*)ptr, 4);
+                return new(ptr, 4);
         }
         /// <summary>
         /// Get bytes of a <see cref="long"/>
         /// </summary>
-        public static Span<byte> GetBytes(this in long value) {
+        public static ReadOnlySpan<byte> GetBytes(this in long value) {
             fixed (long* ptr = &value)
-                return new Span<byte>((byte*)ptr, 8);
+                return new(ptr, 8);
         }
         /// <summary>
         /// Get bytes of a <see cref="ulong"/>
         /// </summary>
-        public static Span<byte> GetBytes(this in ulong value) {
+        public static ReadOnlySpan<byte> GetBytes(this in ulong value) {
             fixed (ulong* ptr = &value)
-                return new Span<byte>((byte*)ptr, 8);
+                return new(ptr, 8);
         }
         /// <summary>
         /// Get bytes of a <see cref="float"/>
         /// </summary>
-        public static Span<byte> GetBytes(this in float value) {
+        public static ReadOnlySpan<byte> GetBytes(this in float value) {
             fixed (float* ptr = &value)
-                return new Span<byte>((byte*)ptr, 4);
+                return new(ptr, 4);
         }
         /// <summary>
         /// Get bytes of a <see cref="double"/>
         /// </summary>
-        public static Span<byte> GetBytes(this in double value) {
+        public static ReadOnlySpan<byte> GetBytes(this in double value) {
             fixed (double* ptr = &value)
-                return new Span<byte>((byte*)ptr, 8);
+                return new(ptr, 8);
         }
         /// <summary>
         /// Read a <see cref="short"/> from a buffer
         /// </summary>
-        public static short ToInt16(this Span<byte> buffer) {
-            fixed (byte* b = buffer) return *(short*)b;
+        public static short ToInt16(this ReadOnlySpan<byte> buffer) {
+            fixed (byte* b = buffer)
+                return *(short*)b;
         }
         /// <summary>
         /// Read a <see cref="int"/> from a buffer
         /// </summary>
-        public static int ToInt32(this Span<byte> buffer) {
+        public static int ToInt32(this ReadOnlySpan<byte> buffer) {
             fixed (byte* b = buffer)
                 return *(int*)b;
         }
         /// <summary>
         /// Read a <see cref="long"/> from a buffer
         /// </summary>
-        public static long ToInt64(this Span<byte> buffer) {
+        public static long ToInt64(this ReadOnlySpan<byte> buffer) {
             fixed (byte* b = buffer)
                 return *(long*)b;
         }
         /// <summary>
         /// Read a <see cref="float"/> from a buffer
         /// </summary>
-        public static float ToSingle(this Span<byte> buffer) {
+        public static float ToSingle(this ReadOnlySpan<byte> buffer) {
             fixed (byte* b = buffer)
                 return *(float*)b;
         }
         /// <summary>
         /// Read a <see cref="double"/> from a buffer
         /// </summary>
-        public static double ToDouble(this Span<byte> buffer) {
+        public static double ToDouble(this ReadOnlySpan<byte> buffer) {
             fixed (byte* b = buffer)
                 return *(double*)b;
         }
@@ -236,7 +237,7 @@ namespace MCServerSharp.Data.Utils {
         /// </summary>
         /// <param name="stream">The buffer to read</param>
         /// <returns>Value of the VarInt</returns>
-        public static int ReadVarInt(this Span<byte> buffer) {
+        public static int ReadVarInt(this ReadOnlySpan<byte> buffer) {
             // Read out an Int32 7 bits at a time.
             // The high bit of the byte when on means to continue reading more bytes.
             var value = 0;
@@ -258,7 +259,7 @@ namespace MCServerSharp.Data.Utils {
         /// <param name="buffer">The buffer to read</param>
         /// <param name="varInt">Value of the VarInt</param>
         /// <returns>Length of bytes read from <paramref name="buffer"/></returns>
-        public static int ReadVarInt(this Span<byte> buffer, out int varInt) {
+        public static int ReadVarInt(this ReadOnlySpan<byte> buffer, out int varInt) {
             // Read out an Int32 7 bits at a time.
             // The high bit of the byte when on means to continue reading more bytes.
             var value = 0;
@@ -281,7 +282,7 @@ namespace MCServerSharp.Data.Utils {
         /// <param name="buffer">The buffer to read</param>
         /// <param name="varInt">Value of the VarInt</param>
         /// <returns>Length of bytes read from <paramref name="buffer"/></returns>
-        public static int ReadVarInt(this Span<byte> buffer, out VarInt varInt) {
+        public static int ReadVarInt(this ReadOnlySpan<byte> buffer, out VarInt varInt) {
             var index = 0;
             byte b;
             do {
