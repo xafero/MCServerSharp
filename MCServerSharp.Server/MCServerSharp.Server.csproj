@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net6.0</TargetFramework>
+	<RootNamespace>MCServerSharp</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\MCServerSharp.Commands\MCServerSharp.Commands.csproj" />
+    <ProjectReference Include="..\MCServerSharp.Data\MCServerSharp.Data.csproj" />
+    <ProjectReference Include="..\MCServerSharp.Network\MCServerSharp.Network.csproj" />
+    <ProjectReference Include="..\MCServerSharp.Substrate\MCServerSharp.Substrate.csproj" />
+  </ItemGroup>
+
+</Project>

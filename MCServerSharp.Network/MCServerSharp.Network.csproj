@@ -1,0 +1,13 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\MCServerSharp.API\MCServerSharp.API.csproj" />
+    <ProjectReference Include="..\MCServerSharp.Commands\MCServerSharp.Commands.csproj" />
+  </ItemGroup>
+
+</Project>

@@ -1,0 +1,12 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+	<RootNamespace>Substrate</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\MCServerSharp.Zlib\MCServerSharp.Zlib.csproj" />
+  </ItemGroup>
+
+</Project>
