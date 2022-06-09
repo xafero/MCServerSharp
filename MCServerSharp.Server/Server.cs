@@ -12,7 +12,7 @@ using System.Net.Http;
 
 namespace MCServerSharp {
 	/// <summary>
-	/// A Minectaft Server implemented with C#
+	/// A Minecraft Server implemented with C#
 	/// </summary>
 	public class Server : IServer {
 		/// <summary>
@@ -22,7 +22,7 @@ namespace MCServerSharp {
 		public static readonly HttpClient Http = new();
 
 		/// <summary>
-		/// Game version of minecraft
+		/// Game version of Minecraft
 		/// </summary>
 		public readonly string GameVersion = "1.16.5";
 
@@ -97,7 +97,9 @@ namespace MCServerSharp {
 		/// <summary>
 		/// Start a new instance of server
 		/// </summary>
-		public Server(Options? configs) {
+		public Server(Options? configs)
+        {
+            Global.ServerInstance = this;
 			Instance = this;
 			ServerOptions = configs ?? new Options(25565);
 
